@@ -2,8 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-
-
 const authRoutes = require('./routes/authRoutes.js');
 
 const app = express();
@@ -12,13 +10,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// --- Routes ---
+app.use('/api/auth', authRoutes);
+
 // --- Basic Test Route ---
 app.get('/', (req, res) => {
     res.send('Hello from Humanity Hackathon Backend!');
 });
-
-
-app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 5001;
 
@@ -29,5 +27,7 @@ mongoose.connect(process.env.MONGO_URI)
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch((error) => {
-    // ...
+    console.error('Connection to MongoDB failed!');
+    console.error(error.message);
+    process.exit(1);
   });

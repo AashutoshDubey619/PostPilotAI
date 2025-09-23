@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser } = require('../controllers/authController.js');
+// Yahan loginUser ko bhi import kiya
+const { registerUser, loginUser } = require('../controllers/authController.js');
 
-// Define the route for user registration
-// When a POST request is made to '/api/auth/register', the registerUser function will be executed.
+// POST /api/auth/register (Yeh pehle se tha)
 router.post('/register', registerUser);
 
+// --- LOGIN KE LIYE NAYA ROUTE ---
+// POST /api/auth/login
+router.post('/login', loginUser);
+
 module.exports = router;
+
