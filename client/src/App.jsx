@@ -1,21 +1,29 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Register from './pages/Register';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard'; // Dashboard ko import kiya
+import { Routes, Route, useLocation } from 'react-router-dom';
+import Register from './pages/Register'; // .jsx hataya
+import Login from './pages/Login';       // .jsx hataya
+import Dashboard from './pages/Dashboard'; // .jsx hataya
+import CalendarPage from './pages/CalendarPage'; // .jsx hataya
+import Navbar from './components/Navbar';       // .jsx hataya
 
 function App() {
+  const location = useLocation();
+  // Hum Navbar sirf login aur register page par nahi dikhayenge
+  const showNavbar = location.pathname !== '/login' && location.pathname !== '/register';
+
   return (
-    <Routes>
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-      {/* Humne yahan dashboard ka naya route add kiya hai */}
-      <Route path="/dashboard" element={<Dashboard />} /> 
-      {/* Default route abhi bhi login page hai */}
-      <Route path="/" element={<Login />} />
-    </Routes>
+    <div>
+      {/* Agar showNavbar true hai, to hi Navbar dikhega */}
+      {showNavbar && <Navbar />}
+      <Routes>
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/calendar" element={<CalendarPage />} /> {/* Naya route add kiya */}
+        <Route path="/" element={<Login />} />
+      </Routes>
+    </div>
   );
 }
 
 export default App;
-

@@ -1,16 +1,17 @@
 const express = require('express');
 const router = express.Router();
-// Hum ab controller se dono functions import kar rahe hain
-const { postToTwitter, schedulePost } = require('../controllers/postController.js');
-const { protect } = require('../middleware/authMiddleware.js'); // Security guard
+// getPosts ko yahan import kiya
+const { postToTwitter, schedulePost, getPosts } = require('../controllers/postController.js');
+const { protect } = require('../middleware/authMiddleware.js');
 
-// "Post Now" ke liye (yeh pehle se tha)
-// POST /api/post/twitter
+// "Post Now" ke liye
 router.post('/twitter', protect, postToTwitter);
 
-// Post ko schedule karne ke liye naya route
-// POST /api/post/schedule
+// Post ko schedule karne ke liye
 router.post('/schedule', protect, schedulePost);
 
-module.exports = router;
+// Saare posts get karne ke liye naya route
+// GET /api/post/all
+router.get('/all', protect, getPosts);
 
+module.exports = router;
