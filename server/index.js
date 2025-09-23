@@ -2,7 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+
+// --- Routes Files ---
 const authRoutes = require('./routes/authRoutes.js');
+const connectRoutes = require('./routes/connectRoutes.js');
+const aiRoutes = require('./routes/aiRoutes.js'); // <-- ADD THIS LINE
 
 const app = express();
 
@@ -12,6 +16,8 @@ app.use(express.json());
 
 // --- Routes ---
 app.use('/api/auth', authRoutes);
+app.use('/api/connect', connectRoutes);
+app.use('/api/ai', aiRoutes); // <-- ADD THIS LINE
 
 // --- Basic Test Route ---
 app.get('/', (req, res) => {
