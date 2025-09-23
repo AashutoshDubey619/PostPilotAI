@@ -1,23 +1,21 @@
 import React from 'react';
-// Routes aur Route ko react-router-dom se import kiya
 import { Routes, Route } from 'react-router-dom';
 import Register from './pages/Register';
-import Login from './pages/Login'; // Login component ko import kiya
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard'; // Dashboard ko import kiya
 
 function App() {
   return (
-    // Routes component ke andar hum alag-alag Route define karte hain
     <Routes>
-      {/* Agar URL me /register hai, to Register component dikhao */}
       <Route path="/register" element={<Register />} />
-      
-      {/* Agar URL me /login hai, to Login component dikhao */}
       <Route path="/login" element={<Login />} />
-
-      {/* Hum / (default) route ko bhi login par bhej dete hain */}
+      {/* Humne yahan dashboard ka naya route add kiya hai */}
+      <Route path="/dashboard" element={<Dashboard />} /> 
+      {/* Default route abhi bhi login page hai */}
       <Route path="/" element={<Login />} />
     </Routes>
   );
 }
 
 export default App;
+

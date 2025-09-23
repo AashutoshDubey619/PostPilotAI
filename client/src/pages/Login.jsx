@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; // Link ko import kiya
+import { Link, useNavigate } from 'react-router-dom'; // useNavigate ko import kiya
 
 const Login = () => {
-    // State aur handleSubmit logic waisa hi rahega
+    // useNavigate hook se hum user ko redirect kar payenge
+    const navigate = useNavigate(); 
+    
+    // State logic waisa hi rahega
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -11,11 +14,22 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage('');
+
         try {
-            const response = await axios.post('http://localhost:5001/api/auth/login', { email, password });
-            console.log('Login successful, token:', response.data.token);
-            setMessage('Login successful!');
-            // TODO: Token save karke redirect karna
+            const response = await axios.post('http://localhost:5001/api/auth/login', {
+                email,
+                password,
+            });
+
+            // --- YEH HISSA IMPORTANT HAI ---
+            // 1. Token ko browser ki localStorage me save karna
+            localStorage.setItem('userInfo', JSON.stringify(response.data));
+
+            setMessage('Login successful! Redirecting...');
+            
+            // 2. User ko /dashboard page par bhej dena
+            navigate('/dashboard');
+
         } catch (error) {
             console.error('Login failed:', error.response.data.message);
             setMessage(error.response.data.message || 'Login failed.');
@@ -40,8 +54,7 @@ const Login = () => {
 
                 {message && <p style={{ textAlign: 'center', marginTop: '16px', color: message.includes('successful') ? 'green' : 'red' }}>{message}</p>}
 
-                {/* --- REGISTER KA LINK YAHAN ADD KIYA --- */}
-                <p style={{ textAlign: 'center', marginTop: '20px', fontFamily: 'Arial, sans-serif' , color : 'black'}}>
+                <p style={{ textAlign: 'center', marginTop: '20px', fontFamily: 'Arial, sans-serif' }}>
                     Don't have an account? <Link to="/register" style={{ color: '#007bff', textDecoration: 'none' }}>Register</Link>
                 </p>
             </form>
@@ -50,4 +63,3 @@ const Login = () => {
 };
 
 export default Login;
-
