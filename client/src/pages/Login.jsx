@@ -1,63 +1,62 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom'; // useNavigate ko import kiya
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    // useNavigate hook se hum user ko redirect kar payenge
-    const navigate = useNavigate(); 
-    
-    // State logic waisa hi rahega
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage('');
-
+        setIsLoading(true);
         try {
-            const response = await axios.post('http://localhost:5001/api/auth/login', {
-                email,
-                password,
-            });
-
-            // --- YEH HISSA IMPORTANT HAI ---
-            // 1. Token ko browser ki localStorage me save karna
+            const response = await axios.post('http://localhost:5001/api/auth/login', { email, password });
             localStorage.setItem('userInfo', JSON.stringify(response.data));
-
-            setMessage('Login successful! Redirecting...');
-            
-            // 2. User ko /dashboard page par bhej dena
             navigate('/dashboard');
-
         } catch (error) {
-            console.error('Login failed:', error.response.data.message);
-            setMessage(error.response.data.message || 'Login failed.');
+            setMessage(error.response?.data?.message || 'Login failed. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f2f5' }}>
-            <form onSubmit={handleSubmit} style={{ padding: '40px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', backgroundColor: 'white', width: '400px' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '24px', color: '#333', fontFamily: 'Arial, sans-serif' }}>Login to Your Account</h2>
-                
-                <div style={{ marginBottom: '16px' }}>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required style={{ width: '100%', padding: '12px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+        <div className="auth-container">
+            <div className="auth-form-container">
+                <div>
+                    <h2 className="auth-title">Welcome Back!</h2>
+                    <p className="auth-subtitle">Sign in to continue to your dashboard</p>
                 </div>
-                <div style={{ marginBottom: '24px' }}>
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required style={{ width: '100%', padding: '12px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
-                </div>
-                
-                <button type="submit" style={{ width: '100%', padding: '12px', borderRadius: '4px', border: 'none', backgroundColor: '#007bff', color: 'white', cursor: 'pointer', fontSize: '16px' }}>
-                    Login
-                </button>
-
-                {message && <p style={{ textAlign: 'center', marginTop: '16px', color: message.includes('successful') ? 'green' : 'red' }}>{message}</p>}
-
-                <p style={{ textAlign: 'center', marginTop: '20px', fontFamily: 'Arial, sans-serif' }}>
-                    Don't have an account? <Link to="/register" style={{ color: '#007bff', textDecoration: 'none' }}>Register</Link>
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Email Address"
+                        required
+                        className="form-input"
+                    />
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Password"
+                        required
+                        className="form-input"
+                    />
+                    {message && <p className="error-message">{message}</p>}
+                    <button type="submit" className="submit-button" disabled={isLoading}>
+                        {isLoading ? 'Logging in...' : 'Login'}
+                    </button>
+                </form>
+                <p className="auth-link">
+                    Don't have an account? <Link to="/register">Register</Link>
                 </p>
-            </form>
+            </div>
         </div>
     );
 };

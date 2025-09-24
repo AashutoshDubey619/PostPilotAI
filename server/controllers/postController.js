@@ -1,6 +1,7 @@
 const { TwitterApi } = require('twitter-api-v2');
 const SocialAccount = require('../models/SocialAccount');
 const Post = require('../models/Post');
+const axios = require('axios');
 
 // --- FUNCTION 1: POST TEXT TWEET NOW ---
 const postToTwitter = async (req, res) => {
@@ -14,7 +15,7 @@ const postToTwitter = async (req, res) => {
         try {
             await userClient.v2.tweet(content);
         } catch (e) {
-            if (e.code === 401) { // Token expired, try to refresh
+            if (e.code === 401) {
                 console.log("Access token expired. Refreshing token...");
                 const refreshingClient = new TwitterApi({ clientId: process.env.TWITTER_CLIENT_ID, clientSecret: process.env.TWITTER_CLIENT_SECRET });
                 const { client: refreshedClient, accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshingClient.refreshOAuth2Token(twitterAccount.refreshToken);
@@ -62,53 +63,66 @@ const getPosts = async (req, res) => {
 const postImageToTwitter = async (req, res) => {
     const userId = req.user._id;
     const { caption, imageBase64 } = req.body;
-
-    if (!caption || !imageBase64) {
-        return res.status(400).json({ message: "Caption and image data are required." });
-    }
-
+    if (!caption || !imageBase64) { return res.status(400).json({ message: "Caption and image data are required." }); }
     try {
         const twitterAccount = await SocialAccount.findOne({ userId, platform: 'twitter' });
-        if (!twitterAccount) {
-            return res.status(404).json({ message: "Twitter account not connected." });
-        }
-
-        let userClient = new TwitterApi(twitterAccount.accessToken);
-        
-        const postTweetWithImage = async (client) => {
-            const mediaId = await client.v1.uploadMedia(
-                Buffer.from(imageBase64.split(',')[1], 'base64'), 
-                { mimeType: 'image/png' }
-            );
-            await client.v2.tweet(caption, { media: { media_ids: [mediaId] } });
-        };
-
-        try {
-            await postTweetWithImage(userClient);
-        } catch (e) {
-            if (e.code === 401) { // Token expired
-                console.log("Access token expired for image post. Refreshing...");
-                const refreshingClient = new TwitterApi({ clientId: process.env.TWITTER_CLIENT_ID, clientSecret: process.env.TWITTER_CLIENT_SECRET });
-                const { client: refreshedClient, accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshingClient.refreshOAuth2Token(twitterAccount.refreshToken);
-                
-                twitterAccount.accessToken = newAccessToken;
-                twitterAccount.refreshToken = newRefreshToken;
-                await twitterAccount.save();
-                
-                console.log('Token refreshed. Retrying image post...');
-                await postTweetWithImage(refreshedClient);
-            } else {
-                throw e;
-            }
-        }
-
+        if (!twitterAccount) { return res.status(404).json({ message: "Twitter account not connected." }); }
+        const userClient = new TwitterApi(twitterAccount.accessToken);
+        const mediaId = await userClient.v1.uploadMedia(Buffer.from(imageBase64.split(',')[1], 'base64'), { mimeType: 'image/png' });
+        await userClient.v2.tweet(caption, { media: { media_ids: [mediaId] } });
         res.status(200).json({ message: "Image posted successfully to Twitter!" });
-
     } catch (error) {
         console.error("Error posting image to Twitter:", error);
         res.status(500).json({ message: "Failed to post image tweet." });
     }
 };
 
+// --- FUNCTION 5: POST TO LINKEDIN NOW ---
+const postToLinkedIn = async (req, res) => {
+    const userId = req.user._id;
+    const { content } = req.body;
+
+    if (!content) {
+        return res.status(400).json({ message: "Post content is required." });
+    }
+
+    try {
+        const linkedInAccount = await SocialAccount.findOne({ userId, platform: 'linkedin' });
+        if (!linkedInAccount) {
+            return res.status(404).json({ message: "LinkedIn account not connected." });
+        }
+
+        const postData = {
+            "author": `urn:li:person:${linkedInAccount.platformUserId}`,
+            "lifecycleState": "PUBLISHED",
+            "specificContent": {
+                "com.linkedin.ugc.ShareContent": {
+                    "shareCommentary": {
+                        "text": content
+                    },
+                    "shareMediaCategory": "NONE"
+                }
+            },
+            "visibility": {
+                "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+            }
+        };
+        
+        await axios.post('https://api.linkedin.com/v2/ugcPosts', postData, {
+            headers: {
+                'Authorization': `Bearer ${linkedInAccount.accessToken}`,
+                'Content-Type': 'application/json',
+                'X-Restli-Protocol-Version': '2.0.0'
+            }
+        });
+
+        res.status(200).json({ message: "Post shared successfully on LinkedIn!" });
+
+    } catch (error) {
+        console.error("Error posting to LinkedIn:", error.response ? error.response.data : error.message);
+        res.status(500).json({ message: "Failed to post on LinkedIn." });
+    }
+};
+
 // Saare functions ko export karna
-module.exports = { postToTwitter, schedulePost, getPosts, postImageToTwitter };
+module.exports = { postToTwitter, schedulePost, getPosts, postImageToTwitter, postToLinkedIn };

@@ -1,10 +1,13 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import Register from './pages/Register'; // .jsx hataya
-import Login from './pages/Login';       // .jsx hataya
-import Dashboard from './pages/Dashboard'; // .jsx hataya
-import CalendarPage from './pages/CalendarPage'; // .jsx hataya
-import Navbar from './components/Navbar';       // .jsx hataya
+import Register from './pages/Register.jsx';
+import Login from './pages/Login.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import CalendarPage from './pages/CalendarPage.jsx';
+import Navbar from './components/Navbar.jsx';
+
+// Humari nayi custom CSS file ko yahan import kiya
+import './App.css'; 
 
 function App() {
   const location = useLocation();
@@ -13,13 +16,12 @@ function App() {
 
   return (
     <div>
-      {/* Agar showNavbar true hai, to hi Navbar dikhega */}
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/calendar" element={<CalendarPage />} /> {/* Naya route add kiya */}
+        <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/" element={<Login />} />
       </Routes>
     </div>

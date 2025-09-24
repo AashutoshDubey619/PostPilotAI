@@ -1,53 +1,74 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; // Link ko import kiya
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
-    // State aur handleSubmit logic waisa hi rahega
+    const navigate = useNavigate();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage('');
+        setIsLoading(true);
         try {
-            const response = await axios.post('http://localhost:5001/api/auth/register', { name, email, password });
-            console.log(response.data);
+            await axios.post('http://localhost:5001/api/auth/register', { name, email, password });
             setMessage('Registration successful! Please log in.');
+            // Redirect to login page after a short delay
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
         } catch (error) {
-            console.error('Registration failed:', error.response.data.message);
-            setMessage(error.response.data.message || 'Registration failed.');
+            setMessage(error.response?.data?.message || 'Registration failed.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f2f5' }}>
-            <form onSubmit={handleSubmit} style={{ padding: '40px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', backgroundColor: 'white', width: '400px' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '24px', color: '#333', fontFamily: 'Arial, sans-serif' }}>Create Your Account</h2>
-                
-                <div style={{ marginBottom: '16px' }}>
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" required style={{ width: '100%', padding: '12px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+        <div className="auth-container">
+            <div className="auth-form-container">
+                <div>
+                    <h2 className="auth-title">Create Your Account</h2>
+                    <p className="auth-subtitle">Join us and start scheduling your content</p>
                 </div>
-                <div style={{ marginBottom: '16px' }}>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required style={{ width: '100%', padding: '12px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
-                </div>
-                <div style={{ marginBottom: '24px' }}>
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required style={{ width: '100%', padding: '12px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
-                </div>
-                
-                <button type="submit" style={{ width: '100%', padding: '12px', borderRadius: '4px', border: 'none', backgroundColor: '#007bff', color: 'white', cursor: 'pointer', fontSize: '16px' }}>
-                    Register
-                </button>
-
-                {message && <p style={{ textAlign: 'center', marginTop: '16px', color: message.includes('successful') ? 'green' : 'red' }}>{message}</p>}
-
-                {/* --- LOGIN KA LINK YAHAN ADD KIYA --- */}
-                <p style={{ textAlign: 'center', marginTop: '20px', fontFamily: 'Arial, sans-serif' , color : 'black' }}>
-                    Already have an account? <Link to="/login" style={{ color: '#007bff', textDecoration: 'none' }}>Login</Link>
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Full Name"
+                        required
+                        className="form-input"
+                    />
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Email Address"
+                        required
+                        className="form-input"
+                    />
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Password"
+                        required
+                        className="form-input"
+                    />
+                    {message && <p className={message.includes('successful') ? 'success-message' : 'error-message'}>{message}</p>}
+                    <button type="submit" className="submit-button" disabled={isLoading}>
+                        {isLoading ? 'Registering...' : 'Create Account'}
+                    </button>
+                </form>
+                <p className="auth-link">
+                    Already have an account? <Link to="/login">Login</Link>
                 </p>
-            </form>
+            </div>
         </div>
     );
 };

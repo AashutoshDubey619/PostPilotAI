@@ -53,20 +53,20 @@ const CalendarPage = () => {
     }, [navigate]);
 
     if (loading) {
-        return <div>Loading calendar...</div>;
+        return <div style={{ padding: '50px' }}>Loading calendar...</div>;
     }
 
     return (
-        <div style={{ padding: '50px', height: '100vh', backgroundColor: '#f9f9f9' }}>
-            <h1 style={{ color: '#333' }}>Content Calendar</h1>
-            <p style={{ color: '#555' }}>Here's a view of your scheduled and posted content.</p>
-            <div style={{ height: '80%' }}>
+        <div className="calendar-container">
+            <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold' }}>Content Calendar</h1>
+            <p style={{ color: '#a0aec0', marginBottom: '2rem' }}>Here's a view of your scheduled and posted content.</p>
+            <div style={{ height: '80vh' }}> {/* Height ko adjust kiya */}
                 <Calendar
                     localizer={localizer}
                     events={events}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+                    // Nayi CSS classes ka istemal karne ke liye, hum default styling ko pass nahi kar rahe
                 />
             </div>
         </div>
