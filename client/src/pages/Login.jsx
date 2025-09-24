@@ -14,7 +14,7 @@ const Login = () => {
         setMessage('');
         setIsLoading(true);
         try {
-            const response = await axios.post('http://localhost:5001/api/auth/login', { email, password });
+            const response = await axios.post('https://postpilotai-t0xt.onrender.com/api/auth/login', { email, password });
             localStorage.setItem('userInfo', JSON.stringify(response.data));
             navigate('/dashboard');
         } catch (error) {

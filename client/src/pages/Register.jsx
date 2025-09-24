@@ -15,9 +15,9 @@ const Register = () => {
         setMessage('');
         setIsLoading(true);
         try {
-            await axios.post('http://localhost:5001/api/auth/register', { name, email, password });
+            // URL ko naye live backend URL se update kiya
+            await axios.post('https://postpilotai-t0xt.onrender.com/api/auth/register', { name, email, password });
             setMessage('Registration successful! Please log in.');
-            // Redirect to login page after a short delay
             setTimeout(() => {
                 navigate('/login');
             }, 2000);

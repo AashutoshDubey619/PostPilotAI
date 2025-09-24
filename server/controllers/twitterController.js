@@ -6,35 +6,32 @@ const twitterClient = new TwitterApi({
     clientSecret: process.env.TWITTER_CLIENT_SECRET,
 });
 
-const CALLBACK_URL = 'http://localhost:5001/api/connect/twitter/callback';
+// Naya live backend URL
+const CALLBACK_URL = 'https://postpilotai-t0xt.onrender.com/api/connect/twitter/callback';
+// Naya live frontend URL
+const FRONTEND_URL = 'https://post-pilot-hycgzdlut-aashutosh-dubeys-projects.vercel.app';
+
 const authStore = {};
 
 exports.generateAuthLink = (req, res) => {
-    // --- YEH HISSA IMPORTANT HAI ---
-    // DUMMY_USER_ID ki jagah, ab hum asli user ki ID nikalenge
-    // jo 'protect' middleware ne req.user me daali thi.
     const loggedInUserId = req.user._id; 
-
     const { url, codeVerifier, state } = twitterClient.generateOAuth2AuthLink(
         CALLBACK_URL,
         {
-            state: loggedInUserId.toString(), // ID ko string me convert karna zaroori hai
+            state: loggedInUserId.toString(),
             scope: ['tweet.read', 'tweet.write', 'users.read', 'offline.access']
         }
     );
-
     authStore[loggedInUserId] = { codeVerifier, state };
-
     res.redirect(url);
 };
 
-// handleCallback function me koi change nahi hai
 exports.handleCallback = async (req, res) => {
     const { state, code } = req.query;
     const loggedInUserId = state;
 
     if (!state || !code || !authStore[loggedInUserId]) {
-        return res.redirect('http://localhost:5173/dashboard?error=invalid-request');
+        return res.redirect(`${FRONTEND_URL}/dashboard?error=invalid-request`);
     }
 
     const { codeVerifier } = authStore[loggedInUserId];
@@ -50,7 +47,7 @@ exports.handleCallback = async (req, res) => {
 
         const existingAccount = await SocialAccount.findOne({ platform: 'twitter', platformUserId: userObject.id });
         if (existingAccount) {
-            return res.redirect('http://localhost:5173/dashboard?error=account-already-connected');
+            return res.redirect(`${FRONTEND_URL}/dashboard?error=account-already-connected`);
         }
 
         await SocialAccount.create({
@@ -64,9 +61,12 @@ exports.handleCallback = async (req, res) => {
 
         delete authStore[loggedInUserId];
 
-        res.redirect('http://localhost:5173/dashboard?success=twitter-connected');
+        // Yahan URL ko update kiya
+        res.redirect(`${FRONTEND_URL}/dashboard?success=twitter-connected`);
+
     } catch (e) {
         console.error("Error connecting Twitter account:", e);
-        res.redirect('http://localhost:5173/dashboard?error=twitter-auth-failed');
+        // Yahan URL ko update kiya
+        res.redirect(`${FRONTEND_URL}/dashboard?error=twitter-auth-failed`);
     }
 };

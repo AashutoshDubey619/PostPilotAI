@@ -24,6 +24,8 @@ const Dashboard = () => {
     const [generatedImage, setGeneratedImage] = useState('');
     const [imagePostStatus, setImagePostStatus] = useState('');
 
+    const API_BASE_URL = 'https://postpilotai-t0xt.onrender.com';
+
     useEffect(() => {
         const storedUserInfo = JSON.parse(localStorage.getItem('userInfo'));
         if (storedUserInfo) { setUserInfo(storedUserInfo); } 
@@ -35,7 +37,7 @@ const Dashboard = () => {
         else if (error) { setMessage(`Failed to connect account. Error: ${error}`); }
     }, [location, navigate]);
 
-    const handleConnect = (platform) => { if (userInfo && userInfo.token) { window.location.href = `http://localhost:5001/api/connect/${platform}?token=${userInfo.token}`; } };
+    const handleConnect = (platform) => { if (userInfo && userInfo.token) { window.location.href = `${API_BASE_URL}/api/connect/${platform}?token=${userInfo.token}`; } };
 
     const handleGeneratePost = async () => {
         if (!businessContext) { alert("Please describe your business first."); return; }
@@ -43,7 +45,7 @@ const Dashboard = () => {
         try {
             const token = userInfo ? userInfo.token : null;
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            const { data } = await axios.post('http://localhost:5001/api/ai/generate', { businessContext }, config);
+            const { data } = await axios.post(`${API_BASE_URL}/api/ai/generate`, { businessContext }, config);
             setGeneratedTextPost(data.generatedPost);
             setEditableTextPost(data.generatedPost);
         } catch (error) { setGeneratedTextPost("Sorry, we couldn't generate a post right now."); } 
@@ -56,7 +58,7 @@ const Dashboard = () => {
         try {
             const token = userInfo ? userInfo.token : null;
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            const { data } = await axios.post('http://localhost:5001/api/post/twitter', { content: editableTextPost }, config);
+            const { data } = await axios.post(`${API_BASE_URL}/api/post/twitter`, { content: editableTextPost }, config);
             setTextPostStatus(data.message);
         } catch (error) { setTextPostStatus("Failed to post tweet. Please try again."); }
     };
@@ -67,7 +69,7 @@ const Dashboard = () => {
         try {
             const token = userInfo ? userInfo.token : null;
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            const { data } = await axios.post('http://localhost:5001/api/post/schedule', { content: editableTextPost, scheduledAt: scheduleTime, platform: 'twitter' }, config);
+            const { data } = await axios.post(`${API_BASE_URL}/api/post/schedule`, { content: editableTextPost, scheduledAt: scheduleTime, platform: 'twitter' }, config);
             setTextPostStatus(data.message);
         } catch (error) { setTextPostStatus("Failed to schedule post. Please try again."); }
     };
@@ -78,7 +80,7 @@ const Dashboard = () => {
         try {
             const token = userInfo ? userInfo.token : null;
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            const { data } = await axios.post('http://localhost:5001/api/ai/generate-image', { theme: imageTheme }, config);
+            const { data } = await axios.post(`${API_BASE_URL}/api/ai/generate-image`, { theme: imageTheme }, config);
             setGeneratedCaption(data.caption);
             setEditableCaption(data.caption);
             setGeneratedImagePrompt(data.image_prompt);
@@ -92,7 +94,7 @@ const Dashboard = () => {
         try {
             const token = userInfo ? userInfo.token : null;
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            const { data } = await axios.post('http://localhost:5001/api/ai/generate-actual-image', { image_prompt: generatedImagePrompt }, config);
+            const { data } = await axios.post(`${API_BASE_URL}/api/ai/generate-actual-image`, { image_prompt: generatedImagePrompt }, config);
             setGeneratedImage(`data:image/png;base64,${data.imageBase64}`);
         } catch (error) { alert("Sorry, we couldn't generate the image right now. Please try again."); } 
         finally { setIsLoading(false); }
@@ -110,7 +112,7 @@ const Dashboard = () => {
         try {
             const token = userInfo ? userInfo.token : null;
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            const { data } = await axios.post('http://localhost:5001/api/post/linkedin', { content: editableTextPost }, config);
+            const { data } = await axios.post(`${API_BASE_URL}/api/post/linkedin`, { content: editableTextPost }, config);
             setTextPostStatus(data.message);
         } catch (error) { setTextPostStatus("Failed to post on LinkedIn. Please try again."); }
     };

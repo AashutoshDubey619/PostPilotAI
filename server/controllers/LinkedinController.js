@@ -1,7 +1,10 @@
 const axios = require('axios');
 const SocialAccount = require('../models/SocialAccount');
 
-const CALLBACK_URL = 'http://localhost:5001/api/connect/linkedin/callback';
+// Naya live backend URL
+const CALLBACK_URL = 'https://postpilotai-t0xt.onrender.com/api/connect/linkedin/callback';
+// Naya live frontend URL
+const FRONTEND_URL = 'https://post-pilot-hycgzdlut-aashutosh-dubeys-projects.vercel.app';
 
 // Function 1: LinkedIn ke liye authentication link generate karna
 exports.generateAuthLink = (req, res) => {
@@ -17,7 +20,7 @@ exports.handleCallback = async (req, res) => {
     const { code, state: loggedInUserId } = req.query;
 
     if (!code) {
-        return res.redirect('http://localhost:5173/dashboard?error=linkedin-auth-failed');
+        return res.redirect(`${FRONTEND_URL}/dashboard?error=linkedin-auth-failed`);
     }
 
     try {
@@ -47,7 +50,7 @@ exports.handleCallback = async (req, res) => {
         // Check karein ki yeh account pehle se juda hai ya nahi
         const existingAccount = await SocialAccount.findOne({ platform: 'linkedin', platformUserId });
         if (existingAccount) {
-            return res.redirect('http://localhost:5173/dashboard?error=linkedin-account-already-connected');
+            return res.redirect(`${FRONTEND_URL}/dashboard?error=linkedin-account-already-connected`);
         }
 
         // Naya social account banakar database me save karein
@@ -59,10 +62,12 @@ exports.handleCallback = async (req, res) => {
             accessToken,
         });
 
-        res.redirect('http://localhost:5173/dashboard?success=linkedin-connected');
+        // Yahan URL ko update kiya
+        res.redirect(`${FRONTEND_URL}/dashboard?success=linkedin-connected`);
 
     } catch (error) {
         console.error("Error connecting LinkedIn account:", error.response ? error.response.data : error.message);
-        res.redirect('http://localhost:5173/dashboard?error=linkedin-auth-failed');
+        // Yahan URL ko update kiya
+        res.redirect(`${FRONTEND_URL}/dashboard?error=linkedin-auth-failed`);
     }
 };
