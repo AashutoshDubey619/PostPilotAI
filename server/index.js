@@ -8,14 +8,17 @@ const authRoutes = require('./routes/authRoutes.js');
 const connectRoutes = require('./routes/connectRoutes.js');
 const aiRoutes = require('./routes/aiRoutes.js');
 const postRoutes = require('./routes/postRoutes.js');
-// --- Nayi Service Import Ki ---
-const { startScheduler } = require('./services/scheduler.js'); // <-- ADD THIS LINE
+const { startScheduler } = require('./services/scheduler.js');
 
 const app = express();
 
 // --- Middleware ---
 app.use(cors());
-app.use(express.json());
+// --- YEH HISSA IMPORTANT HAI ---
+// Hum Express ko bata rahe hain ki 50MB tak ka JSON data accept karo
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+// --------------------------------
 
 // --- Routes ---
 app.use('/api/auth', authRoutes);
@@ -35,8 +38,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('Successfully connected to MongoDB.');
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-    // --- "Time Machine" Ko Chalu Kiya ---
-    startScheduler(); // <-- ADD THIS LINE
+    startScheduler();
   })
   .catch((error) => {
     console.error('Connection to MongoDB failed!');

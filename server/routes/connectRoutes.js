@@ -1,15 +1,30 @@
 const express = require('express');
 const router = express.Router();
-// Hum ab naye controller aur middleware ko import kar rahe hain
-const { generateAuthLink, handleCallback } = require('../controllers/twitterController');
 const { protect } = require('../middleware/authMiddleware.js');
 
-// Jab user "Connect to Twitter" par click karega,
-// request pehle 'protect' middleware se guzregi
-router.get('/twitter', protect, generateAuthLink);
+// Twitter ke functions ko alag se import karna
+const { 
+    generateAuthLink: generateTwitterLink, 
+    handleCallback: handleTwitterCallback 
+} = require('../controllers/twitterController');
 
-// Callback route ko protect karne ki zaroorat nahi hai
-router.get('/twitter/callback', handleCallback);
+// LinkedIn ke functions ko alag se import karna
+const { 
+    generateAuthLink: generateLinkedInLink, 
+    handleCallback: handleLinkedInCallback 
+} = require('../controllers/LinkedinController.js');
+
+// --- Twitter Routes ---
+// GET /api/connect/twitter
+router.get('/twitter', protect, generateTwitterLink);
+// GET /api/connect/twitter/callback
+router.get('/twitter/callback', handleTwitterCallback);
+
+// --- LinkedIn Routes ---
+// GET /api/connect/linkedin
+router.get('/linkedin', protect, generateLinkedInLink);
+// GET /api/connect/linkedin/callback
+router.get('/linkedin/callback', handleLinkedInCallback);
 
 module.exports = router;
 

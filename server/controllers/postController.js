@@ -2,7 +2,7 @@ const { TwitterApi } = require('twitter-api-v2');
 const SocialAccount = require('../models/SocialAccount');
 const Post = require('../models/Post');
 
-// --- FUNCTION 1: POST NOW (No changes here) ---
+// --- FUNCTION 1: POST TEXT TWEET NOW ---
 const postToTwitter = async (req, res) => {
     const userId = req.user._id;
     const { content } = req.body;
@@ -14,12 +14,14 @@ const postToTwitter = async (req, res) => {
         try {
             await userClient.v2.tweet(content);
         } catch (e) {
-            if (e.code === 401) {
+            if (e.code === 401) { // Token expired, try to refresh
+                console.log("Access token expired. Refreshing token...");
                 const refreshingClient = new TwitterApi({ clientId: process.env.TWITTER_CLIENT_ID, clientSecret: process.env.TWITTER_CLIENT_SECRET });
                 const { client: refreshedClient, accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshingClient.refreshOAuth2Token(twitterAccount.refreshToken);
                 twitterAccount.accessToken = newAccessToken;
                 twitterAccount.refreshToken = newRefreshToken;
                 await twitterAccount.save();
+                console.log("Token refreshed successfully. Retrying post...");
                 await refreshedClient.v2.tweet(content);
             } else { throw e; }
         }
@@ -30,7 +32,7 @@ const postToTwitter = async (req, res) => {
     }
 };
 
-// --- FUNCTION 2: SCHEDULE POST (No changes here) ---
+// --- FUNCTION 2: SCHEDULE POST ---
 const schedulePost = async (req, res) => {
     const userId = req.user._id;
     const { content, scheduledAt, platform } = req.body;
@@ -44,13 +46,11 @@ const schedulePost = async (req, res) => {
     }
 };
 
-// --- FUNCTION 3: GET ALL POSTS FOR CALENDAR (Yeh naya hai) ---
+// --- FUNCTION 3: GET ALL POSTS FOR CALENDAR ---
 const getPosts = async (req, res) => {
     const userId = req.user._id;
     try {
-        // Logged-in user ke saare posts ko database se dhoondho
         const posts = await Post.find({ userId: userId });
-        // Saare posts ko wapas frontend ko bhej do
         res.status(200).json(posts);
     } catch (error) {
         console.error("Error fetching posts:", error);
@@ -58,5 +58,57 @@ const getPosts = async (req, res) => {
     }
 };
 
-// Teeno functions ko export karna
-module.exports = { postToTwitter, schedulePost, getPosts };
+// --- FUNCTION 4: POST IMAGE TWEET NOW ---
+const postImageToTwitter = async (req, res) => {
+    const userId = req.user._id;
+    const { caption, imageBase64 } = req.body;
+
+    if (!caption || !imageBase64) {
+        return res.status(400).json({ message: "Caption and image data are required." });
+    }
+
+    try {
+        const twitterAccount = await SocialAccount.findOne({ userId, platform: 'twitter' });
+        if (!twitterAccount) {
+            return res.status(404).json({ message: "Twitter account not connected." });
+        }
+
+        let userClient = new TwitterApi(twitterAccount.accessToken);
+        
+        const postTweetWithImage = async (client) => {
+            const mediaId = await client.v1.uploadMedia(
+                Buffer.from(imageBase64.split(',')[1], 'base64'), 
+                { mimeType: 'image/png' }
+            );
+            await client.v2.tweet(caption, { media: { media_ids: [mediaId] } });
+        };
+
+        try {
+            await postTweetWithImage(userClient);
+        } catch (e) {
+            if (e.code === 401) { // Token expired
+                console.log("Access token expired for image post. Refreshing...");
+                const refreshingClient = new TwitterApi({ clientId: process.env.TWITTER_CLIENT_ID, clientSecret: process.env.TWITTER_CLIENT_SECRET });
+                const { client: refreshedClient, accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshingClient.refreshOAuth2Token(twitterAccount.refreshToken);
+                
+                twitterAccount.accessToken = newAccessToken;
+                twitterAccount.refreshToken = newRefreshToken;
+                await twitterAccount.save();
+                
+                console.log('Token refreshed. Retrying image post...');
+                await postTweetWithImage(refreshedClient);
+            } else {
+                throw e;
+            }
+        }
+
+        res.status(200).json({ message: "Image posted successfully to Twitter!" });
+
+    } catch (error) {
+        console.error("Error posting image to Twitter:", error);
+        res.status(500).json({ message: "Failed to post image tweet." });
+    }
+};
+
+// Saare functions ko export karna
+module.exports = { postToTwitter, schedulePost, getPosts, postImageToTwitter };
