@@ -12,13 +12,16 @@ const { startScheduler } = require('./services/scheduler.js');
 
 const app = express();
 
-// --- Middleware ---
-app.use(cors());
-// --- YEH HISSA IMPORTANT HAI ---
-// Hum Express ko bata rahe hain ki 50MB tak ka JSON data accept karo
+// --- YEH HISSA IMPORTANT HAI (CORS Setup) ---
+const corsOptions = {
+  origin: 'https://post-pilot-hycgzdlut-aashutosh-dubeys-projects.vercel.app', // Sirf aapke live frontend ko ijaazat do
+  optionsSuccessStatus: 200 
+};
+app.use(cors(corsOptions));
+// ---------------------------------------------
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-// --------------------------------
 
 // --- Routes ---
 app.use('/api/auth', authRoutes);
