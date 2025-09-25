@@ -1,76 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
-// Calendar ke liye moment.js ko setup karna
 const localizer = momentLocalizer(moment);
 
 const CalendarPage = () => {
-    const navigate = useNavigate();
-    const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState([]);
+  const API_BASE_URL = 'https://postpilotai-t0xt.onrender.com';
 
-    useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                // LocalStorage se token nikalna
-                const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-                if (!userInfo || !userInfo.token) {
-                    navigate('/login');
-                    return;
-                }
-                
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${userInfo.token}`,
-                    },
-                };
-                
-                // Backend se saare posts fetch karna
-                const { data } = await axios.get('http://localhost:5001/api/post/all', config);
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const token = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : null;
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        const response = await axios.get(`${API_BASE_URL}/api/post/posts`, config);
+        const posts = response.data.map(post => ({
+          title: post.content,
+          start: new Date(post.scheduledAt || post.createdAt),
+          end: new Date(post.scheduledAt || post.createdAt),
+        }));
+        setEvents(posts);
+      } catch (error) {
+        console.error('Failed to fetch posts for calendar:', error);
+      }
+    };
+    fetchPosts();
+  }, []);
 
-                // Posts ke data ko calendar ke format me badalna
-                const formattedEvents = data.map(post => ({
-                    title: post.content.substring(0, 30) + '...', // Post ka chhota sa hissa
-                    start: new Date(post.scheduledAt),
-                    end: new Date(post.scheduledAt), // Start aur end time same rakhenge
-                    allDay: false,
-                    resource: post, // Poora post object save kar rahe hain
-                }));
-                
-                setEvents(formattedEvents);
-
-            } catch (error) {
-                console.error("Could not fetch posts:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPosts();
-    }, [navigate]);
-
-    if (loading) {
-        return <div style={{ padding: '50px' }}>Loading calendar...</div>;
-    }
-
-    return (
-        <div className="calendar-container">
-            <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold' }}>Content Calendar</h1>
-            <p style={{ color: '#a0aec0', marginBottom: '2rem' }}>Here's a view of your scheduled and posted content.</p>
-            <div style={{ height: '80vh' }}> {/* Height ko adjust kiya */}
-                <Calendar
-                    localizer={localizer}
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    // Nayi CSS classes ka istemal karne ke liye, hum default styling ko pass nahi kar rahe
-                />
-            </div>
-        </div>
-    );
+  return (
+    <div className="calendar-page-container">
+      <h1>Content Calendar</h1>
+      <p>Here's a view of your scheduled and posted content.</p>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 600 }}
+        toolbar={true}
+        popup={true}
+        views={['month', 'week', 'day', 'agenda']}
+      />
+    </div>
+  );
 };
 
 export default CalendarPage;
