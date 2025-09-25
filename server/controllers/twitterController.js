@@ -6,7 +6,7 @@ const twitterClient = new TwitterApi({
     clientSecret: process.env.TWITTER_CLIENT_SECRET,
 });
 
-const CALLBACK_URL = 'https://postpilotai-t0xt.onrender.com/api/connect/twitter/callback';
+const CALLBACK_URL = 'https://post-pilot-hycgzdlut-aashutosh-dubeys-projects.vercel.app/api/connect/twitter/callback';
 const FRONTEND_URL = 'https://post-pilot-hycgzdlut-aashutosh-dubeys-projects.vercel.app';
 
 const authStore = {};
