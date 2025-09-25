@@ -45,7 +45,12 @@ exports.handleCallback = async (req, res) => {
 
         const existingAccount = await SocialAccount.findOne({ platform: 'twitter', platformUserId: userObject.id });
         if (existingAccount) {
-            return res.redirect(`${FRONTEND_URL}/dashboard?error=account-already-connected`);
+            // Update tokens if account already exists
+            existingAccount.accessToken = accessToken;
+            existingAccount.refreshToken = refreshToken;
+            await existingAccount.save();
+            delete authStore[loggedInUserId];
+            return res.redirect(`${FRONTEND_URL}/dashboard?success=twitter-connected`);
         }
 
         await SocialAccount.create({
