@@ -15,7 +15,8 @@ const CalendarPage = () => {
       try {
         const token = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : null;
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const response = await axios.get(`${API_BASE_URL}/api/post/posts`, config);
+        // Corrected API endpoint to /api/post/all as per backend routes
+        const response = await axios.get(`${API_BASE_URL}/api/post/all`, config);
         const posts = response.data.map(post => ({
           title: post.content,
           start: new Date(post.scheduledAt || post.createdAt),
