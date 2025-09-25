@@ -6,9 +6,7 @@ const twitterClient = new TwitterApi({
     clientSecret: process.env.TWITTER_CLIENT_SECRET,
 });
 
-// Naya live backend URL
-const CALLBACK_URL = 'https://postpilotai-t0xt.onrender.com/api/connect/twitter/callback';
-// Naya live frontend URL
+const CALLBACK_URL = 'https://post-pilot-hycgzdlut-aashutosh-dubeys-projects.vercel.app/api/connect/twitter/callback';
 const FRONTEND_URL = 'https://post-pilot-hycgzdlut-aashutosh-dubeys-projects.vercel.app';
 
 const authStore = {};
