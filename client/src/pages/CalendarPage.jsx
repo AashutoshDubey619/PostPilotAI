@@ -19,9 +19,9 @@ const CalendarPage = () => {
         const response = await axios.get(`${API_BASE_URL}/api/post/all`, config);
 const posts = response.data.map(post => ({
   title: post.content,
-  // Convert UTC time to local time for correct display
-  start: new Date(new Date(post.scheduledAt || post.createdAt).toLocaleString()),
-  end: new Date(new Date(post.scheduledAt || post.createdAt).toLocaleString()),
+  // Convert UTC time to local time for correct display with timezone offset fix
+  start: new Date(new Date(post.scheduledAt || post.createdAt).getTime() + new Date().getTimezoneOffset() * 60000),
+  end: new Date(new Date(post.scheduledAt || post.createdAt).getTime() + new Date().getTimezoneOffset() * 60000),
 }));
         setEvents(posts);
       } catch (error) {
