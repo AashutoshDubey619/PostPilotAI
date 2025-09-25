@@ -18,12 +18,17 @@ const postToTwitter = async (req, res) => {
             if (e.code === 401) {
                 console.log("Access token expired. Refreshing token...");
                 const refreshingClient = new TwitterApi({ clientId: process.env.TWITTER_CLIENT_ID, clientSecret: process.env.TWITTER_CLIENT_SECRET });
-                const { client: refreshedClient, accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshingClient.refreshOAuth2Token(twitterAccount.refreshToken);
-                twitterAccount.accessToken = newAccessToken;
-                twitterAccount.refreshToken = newRefreshToken;
-                await twitterAccount.save();
-                console.log("Token refreshed successfully. Retrying post...");
-                await refreshedClient.v2.tweet(content);
+                try {
+                    const { client: refreshedClient, accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshingClient.refreshOAuth2Token(twitterAccount.refreshToken);
+                    twitterAccount.accessToken = newAccessToken;
+                    twitterAccount.refreshToken = newRefreshToken;
+                    await twitterAccount.save();
+                    console.log("Token refreshed successfully. Retrying post...");
+                    await refreshedClient.v2.tweet(content);
+                } catch (refreshError) {
+                    console.error("Error refreshing token:", refreshError);
+                    throw refreshError;
+                }
             } else { throw e; }
         }
         res.status(200).json({ message: "Tweet posted successfully!" });
