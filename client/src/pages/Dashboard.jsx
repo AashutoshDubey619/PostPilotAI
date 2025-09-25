@@ -48,7 +48,7 @@ const Dashboard = () => {
             const { data } = await axios.post(`${API_BASE_URL}/api/ai/generate`, { businessContext }, config);
             setGeneratedTextPost(data.generatedPost);
             setEditableTextPost(data.generatedPost);
-        } catch (error) { setGeneratedTextPost("Sorry, we couldn't generate a post right now."); } 
+        } catch { setGeneratedTextPost("Sorry, we couldn't generate a post right now."); }
         finally { setIsLoading(false); }
     };
 
@@ -60,7 +60,7 @@ const Dashboard = () => {
             const config = { headers: { Authorization: `Bearer ${token}` } };
             const { data } = await axios.post(`${API_BASE_URL}/api/post/twitter`, { content: editableTextPost }, config);
             setTextPostStatus(data.message);
-        } catch (error) { setTextPostStatus("Failed to post tweet. Please try again."); }
+        } catch { setTextPostStatus("Failed to post tweet. Please try again."); }
     };
     
     const handleSchedulePost = async () => {
@@ -71,7 +71,7 @@ const Dashboard = () => {
             const config = { headers: { Authorization: `Bearer ${token}` } };
             const { data } = await axios.post(`${API_BASE_URL}/api/post/schedule`, { content: editableTextPost, scheduledAt: scheduleTime, platform: 'twitter' }, config);
             setTextPostStatus(data.message);
-        } catch (error) { setTextPostStatus("Failed to schedule post. Please try again."); }
+        } catch { setTextPostStatus("Failed to schedule post. Please try again."); }
     };
 
     const handleGenerateImagePost = async () => {
@@ -84,7 +84,7 @@ const Dashboard = () => {
             setGeneratedCaption(data.caption);
             setEditableCaption(data.caption);
             setGeneratedImagePrompt(data.image_prompt);
-        } catch (error) { setGeneratedCaption("Sorry, we couldn't generate a caption right now."); } 
+        } catch { setGeneratedCaption("Sorry, we couldn't generate a caption right now."); }
         finally { setIsLoading(false); }
     };
 
@@ -96,7 +96,7 @@ const Dashboard = () => {
             const config = { headers: { Authorization: `Bearer ${token}` } };
             const { data } = await axios.post(`${API_BASE_URL}/api/ai/generate-actual-image`, { image_prompt: generatedImagePrompt }, config);
             setGeneratedImage(`data:image/png;base64,${data.imageBase64}`);
-        } catch (error) { alert("Sorry, we couldn't generate the image right now. Please try again."); } 
+        } catch { alert("Sorry, we couldn't generate the image right now. Please try again."); }
         finally { setIsLoading(false); }
     };
     
@@ -114,7 +114,7 @@ const Dashboard = () => {
             const config = { headers: { Authorization: `Bearer ${token}` } };
             const { data } = await axios.post(`${API_BASE_URL}/api/post/linkedin`, { content: editableTextPost }, config);
             setTextPostStatus(data.message);
-        } catch (error) { setTextPostStatus("Failed to post on LinkedIn. Please try again."); }
+        } catch { setTextPostStatus("Failed to post on LinkedIn. Please try again."); }
     };
 
     return (

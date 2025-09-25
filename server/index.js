@@ -15,7 +15,7 @@ const app = express();
 // --- YEH HISSA IMPORTANT HAI (CORS Setup) ---
 // Hum Express ko bata rahe hain ki kaun se methods aur headers allowed hain
 app.use(cors({
-  origin: 'https://post-pilot-hycgzdlut-aashutosh-dubeys-projects.vercel.app', // Sirf aapke live frontend ko ijaazat do
+  origin: 'https://post-pilot-ai-ten.vercel.app', // Sirf aapke live frontend ko ijaazat do
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
