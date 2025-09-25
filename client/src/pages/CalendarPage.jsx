@@ -17,11 +17,12 @@ const CalendarPage = () => {
         const config = { headers: { Authorization: `Bearer ${token}` } };
         // Corrected API endpoint to /api/post/all as per backend routes
         const response = await axios.get(`${API_BASE_URL}/api/post/all`, config);
-        const posts = response.data.map(post => ({
-          title: post.content,
-          start: new Date(post.scheduledAt || post.createdAt),
-          end: new Date(post.scheduledAt || post.createdAt),
-        }));
+const posts = response.data.map(post => ({
+  title: post.content,
+  // Convert UTC time to local time for correct display
+  start: new Date(new Date(post.scheduledAt || post.createdAt).toLocaleString()),
+  end: new Date(new Date(post.scheduledAt || post.createdAt).toLocaleString()),
+}));
         setEvents(posts);
       } catch (error) {
         console.error('Failed to fetch posts for calendar:', error);
