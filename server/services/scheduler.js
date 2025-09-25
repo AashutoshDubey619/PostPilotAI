@@ -16,8 +16,11 @@ const processScheduledPost = async (post) => {
         // Token refresh logic bilkul waisi hi hai jaisi postController me thi
         let userClient = new TwitterApi(twitterAccount.accessToken);
         try {
+            console.log(`Attempting to post tweet for post ID: ${post._id}`);
             await userClient.v2.tweet(post.content);
+            console.log(`Tweet posted successfully for post ID: ${post._id}`);
         } catch (e) {
+            console.error(`Error posting tweet for post ID: ${post._id}:`, e);
             if (e.code === 401) { // Token expired
                 console.log(`Token expired for post ${post._id}. Refreshing...`);
                 const refreshingClient = new TwitterApi({
@@ -25,14 +28,20 @@ const processScheduledPost = async (post) => {
                     clientSecret: process.env.TWITTER_CLIENT_SECRET,
                 });
 
-                const { client: refreshedClient, accessToken, refreshToken } = await refreshingClient.refreshOAuth2Token(twitterAccount.refreshToken);
-                
-                twitterAccount.accessToken = accessToken;
-                twitterAccount.refreshToken = refreshToken;
-                await twitterAccount.save();
-                
-                console.log('Token refreshed. Retrying post...');
-                await refreshedClient.v2.tweet(post.content);
+                try {
+                    const { client: refreshedClient, accessToken, refreshToken } = await refreshingClient.refreshOAuth2Token(twitterAccount.refreshToken);
+                    
+                    twitterAccount.accessToken = accessToken;
+                    twitterAccount.refreshToken = refreshToken;
+                    await twitterAccount.save();
+                    
+                    console.log('Token refreshed. Retrying post...');
+                    await refreshedClient.v2.tweet(post.content);
+                    console.log(`Tweet posted successfully after token refresh for post ID: ${post._id}`);
+                } catch (refreshError) {
+                    console.error(`Failed to refresh token or post tweet for post ID: ${post._id}:`, refreshError);
+                    throw refreshError;
+                }
             } else {
                 throw e;
             }
