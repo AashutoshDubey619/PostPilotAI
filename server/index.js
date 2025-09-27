@@ -13,12 +13,11 @@ const { startScheduler } = require('./services/scheduler.js');
 const app = express();
 
 // --- YEH HISSA IMPORTANT HAI (CORS Setup) ---
+
 // Hum Express ko bata rahe hain ki kaun se methods aur headers allowed hain
-app.use(cors({
-  origin: 'https://post-pilot-ai-ten.vercel.app', // Sirf aapke live frontend ko ijaazat do
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+
+app.use(cors());
+
 // ---------------------------------------------
 
 app.use(express.json({ limit: '50mb' }));
