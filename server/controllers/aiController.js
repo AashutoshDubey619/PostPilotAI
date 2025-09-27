@@ -16,7 +16,7 @@ const generateContent = async (req, res) => {
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        const text = response.text();
+        const text = await response.text();
 
         res.status(200).json({ generatedPost: text });
     } catch (error) {
@@ -38,7 +38,7 @@ const generateImagePost = async (req, res) => {
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        let text = response.text();
+        let text = await response.text();
         
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {

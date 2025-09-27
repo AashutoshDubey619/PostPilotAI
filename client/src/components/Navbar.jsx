@@ -12,7 +12,7 @@ const Navbar = () => {
     return (
         <nav className="navbar">
             <div className="navbar-brand">
-                <Link to="/dashboard">Social Scheduler</Link>
+                <Link to="/dashboard">Post Pilot</Link>
             </div>
             <div className="navbar-links">
                 <Link to="/dashboard">Dashboard</Link>
