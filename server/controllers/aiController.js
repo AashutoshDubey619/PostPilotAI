@@ -11,7 +11,7 @@ const generateContent = async (req, res) => {
             return res.status(400).json({ message: "Business context is required." });
         }
 
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" });
         const prompt = `You are a social media expert for small businesses. A user has provided their business context. Generate a short, engaging, and creative social media post (around 2-3 lines) for them. Add 2-3 relevant hashtags. The post should not sound too robotic. Business context: "${businessContext}"`;
 
         const result = await model.generateContent(prompt);
