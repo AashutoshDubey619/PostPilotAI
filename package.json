@@ -3,6 +3,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.3.2",
+    "openai": "^5.23.1",
     "react-bits": "^1.0.5",
     "react-icons": "^5.5.0",
     "react-native-web": "^0.17.7"
