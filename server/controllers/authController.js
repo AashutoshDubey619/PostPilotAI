@@ -1,8 +1,7 @@
 const User = require('../models/user.js');
-const bcrypt = require('bcryptjs'); // Password hashing ke liye
-const jwt = require('jsonwebtoken'); // Token banane ke liye
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-// Register User (Yeh function pehle se tha, ab isme password hashing hai)
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -12,14 +11,13 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        // --- IMPORTANT: Password ko save karne se pehle hash karna ---
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const user = await User.create({
             name,
             email,
-            password: hashedPassword, // Database me hashed password save hoga
+            password: hashedPassword,
         });
 
         if (user) {
@@ -37,24 +35,19 @@ const registerUser = async (req, res) => {
     }
 };
 
-// --- LOGIN USER KA NAYA FUNCTION ---
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Step 1: User ko email se database me dhoondho
         const user = await User.findOne({ email });
 
-        // Step 2: Agar user milta hai AUR password match hota hai
         if (user && (await bcrypt.compare(password, user.password))) {
-            // Step 3: Ek naya token generate karo
             const token = jwt.sign(
-                { id: user._id }, // Token me user ki ID save kar rahe hain
-                process.env.JWT_SECRET, // Hamari secret key jo .env file me hai
-                { expiresIn: '30d' } // Token 30 din me expire hoga
+                { id: user._id },
+                process.env.JWT_SECRET,
+                { expiresIn: '30d' }
             );
 
-            // Step 4: User ki details aur naya token wapas bhejo
             res.json({
                 _id: user._id,
                 name: user.name,
@@ -62,7 +55,6 @@ const loginUser = async (req, res) => {
                 token: token,
             });
         } else {
-            // Agar user nahi milta ya password galat hai
             res.status(401).json({ message: "Invalid email or password" });
         }
     } catch (error) {
@@ -71,5 +63,5 @@ const loginUser = async (req, res) => {
 };
 
 
-module.exports = { registerUser, loginUser }; // Yahan loginUser ko bhi export kiya
+module.exports = { registerUser, loginUser };
 

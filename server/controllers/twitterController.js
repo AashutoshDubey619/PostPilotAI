@@ -64,12 +64,10 @@ exports.handleCallback = async (req, res) => {
 
         delete authStore[loggedInUserId];
 
-        // Yahan URL ko update kiya
         res.redirect(`${FRONTEND_URL}/dashboard?success=twitter-connected`);
 
     } catch (e) {
         console.error("Error connecting Twitter account:", e);
-        // Yahan URL ko update kiya
         res.redirect(`${FRONTEND_URL}/dashboard?error=twitter-auth-failed`);
     }
 };

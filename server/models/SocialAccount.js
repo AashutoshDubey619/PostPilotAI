@@ -2,28 +2,28 @@ const mongoose = require('mongoose');
 
 const SocialAccountSchema = new mongoose.Schema({
     userId: {
-        type: mongoose.Schema.Types.ObjectId, // Yeh User model se link karega
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
     platform: {
-        type: String, // Jaise, 'twitter', 'linkedin'
+        type: String,
         required: true,
     },
     platformUserId: {
-        type: String, // User ki Twitter ID
+        type: String,
         required: true,
     },
     username: {
-        type: String, // User ka Twitter handle (jaise, @username)
+        type: String,
         required: true,
     },
     accessToken: {
-        type: String, // Post karne ke liye zaroori key
+        type: String,
         required: true,
     },
     refreshToken: {
-        type: String, // Access token ko refresh karne ke liye key
+        type: String,
     },
 }, { timestamps: true });
 

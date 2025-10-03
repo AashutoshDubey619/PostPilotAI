@@ -1,9 +1,8 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const axios = require('axios'); // Axios ka istemal karenge
+const axios = require('axios');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// --- FUNCTION 1: GENERATE TEXT POST ---
 const generateContent = async (req, res) => {
     try {
         const { businessContext } = req.body;
@@ -25,7 +24,6 @@ const generateContent = async (req, res) => {
     }
 };
 
-// --- FUNCTION 2: GENERATE IMAGE IDEA (CAPTION + PROMPT) ---
 const generateImagePost = async (req, res) => {
     try {
         const { theme } = req.body;
@@ -56,7 +54,6 @@ const generateImagePost = async (req, res) => {
     }
 };
 
-// --- FUNCTION 3: GENERATE ACTUAL IMAGE ---
 const generateActualImage = async (req, res) => {
     try {
         const { image_prompt } = req.body;
@@ -90,6 +87,5 @@ const generateActualImage = async (req, res) => {
     }
 };
 
-// Teeno functions ko export karna
 module.exports = { generateContent, generateImagePost, generateActualImage };
 

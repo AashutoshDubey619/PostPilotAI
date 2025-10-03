@@ -119,14 +119,12 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-            {/* --- LEFT (MAIN) COLUMN --- */}
             <main className="dashboard-main">
                 <h1 style={{fontSize: '2.25rem', fontWeight: 'bold'}}>Dashboard</h1>
                 <p style={{color: '#a0aec0', marginBottom: '2rem'}}>Welcome, {userInfo ? userInfo.name : 'Guest'}! Let's create some magic.</p>
 
                 {message && (<div style={{ padding: '1rem', borderRadius: '0.5rem', backgroundColor: message.includes('successfully') ? 'rgba(56, 161, 105, 0.2)' : 'rgba(224, 78, 78, 0.2)', color: message.includes('successfully') ? '#38a169' : '#e53e3e', fontWeight: 'bold', marginBottom: '2rem' }}>{message}</div>)}
 
-                {/* Text Post Card */}
                 <div className="card">
                     <h2 className="card-title">Generate a Text Post</h2>
                     <h3 className="card-subtitle">1. Describe Your Business</h3>
@@ -189,7 +187,6 @@ const Dashboard = () => {
                 </div>
             </main>
 
-            {/* --- RIGHT (SIDEBAR) COLUMN --- */}
             <aside className="dashboard-sidebar">
                 <div className="card">
                     <h2 className="card-title">Connected Accounts</h2>

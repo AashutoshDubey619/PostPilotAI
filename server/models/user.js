@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// We created the schema with the name 'UserSchema' (Capital U, Capital S)
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -21,7 +20,6 @@ const UserSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-// So we must use the EXACT same name 'UserSchema' here
 const User = mongoose.model('User', UserSchema);
 
 module.exports = User;

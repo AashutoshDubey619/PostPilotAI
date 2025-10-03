@@ -6,12 +6,10 @@ import Dashboard from './pages/Dashboard.jsx';
 import CalendarPage from './pages/CalendarPage.jsx';
 import Navbar from './components/Navbar.jsx';
 
-// Humari nayi custom CSS file ko yahan import kiya
-import './App.css'; 
+import './App.css';
 
 function App() {
   const location = useLocation();
-  // Hum Navbar sirf login aur register page par nahi dikhayenge
   const showNavbar = location.pathname !== '/login' && location.pathname !== '/register';
 
   return (

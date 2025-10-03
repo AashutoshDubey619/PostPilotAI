@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 const PostSchema = new mongoose.Schema({
     userId: {
-        type: mongoose.Schema.Types.ObjectId, // Yeh User model se link karega
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
     platform: {
-        type: String, // Jaise, 'twitter'
+        type: String,
         required: true,
     },
     content: {
@@ -20,10 +20,10 @@ const PostSchema = new mongoose.Schema({
         default: 'draft',
     },
     scheduledAt: {
-        type: Date, // Post karne ka time
+        type: Date,
     },
     postedAt: {
-        type: Date, // Asli me post hone ka time
+        type: Date,
     },
 }, { timestamps: true });
 

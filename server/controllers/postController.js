@@ -3,7 +3,6 @@ const SocialAccount = require('../models/SocialAccount');
 const Post = require('../models/Post');
 const axios = require('axios');
 
-// --- FUNCTION 1: POST TEXT TWEET NOW ---
 const postToTwitter = async (req, res) => {
     const userId = req.user._id;
     const { content } = req.body;
@@ -38,7 +37,6 @@ const postToTwitter = async (req, res) => {
     }
 };
 
-// --- FUNCTION 2: SCHEDULE POST ---
 const schedulePost = async (req, res) => {
     const userId = req.user._id;
     const { content, scheduledAt, platform } = req.body;
@@ -52,7 +50,6 @@ const schedulePost = async (req, res) => {
     }
 };
 
-// --- FUNCTION 3: GET ALL POSTS FOR CALENDAR ---
 const getPosts = async (req, res) => {
     const userId = req.user._id;
     try {
@@ -64,7 +61,6 @@ const getPosts = async (req, res) => {
     }
 };
 
-// --- FUNCTION 4: POST IMAGE TWEET NOW ---
 const postImageToTwitter = async (req, res) => {
     const userId = req.user._id;
     const { caption, imageBase64 } = req.body;
@@ -82,7 +78,6 @@ const postImageToTwitter = async (req, res) => {
     }
 };
 
-// --- FUNCTION 5: POST TO LINKEDIN NOW ---
 const postToLinkedIn = async (req, res) => {
     const userId = req.user._id;
     const { content } = req.body;
@@ -129,5 +124,4 @@ const postToLinkedIn = async (req, res) => {
     }
 };
 
-// Saare functions ko export karna
 module.exports = { postToTwitter, schedulePost, getPosts, postImageToTwitter, postToLinkedIn };

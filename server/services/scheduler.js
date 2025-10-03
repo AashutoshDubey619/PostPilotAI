@@ -3,7 +3,6 @@ const Post = require('../models/Post');
 const SocialAccount = require('../models/SocialAccount');
 const { TwitterApi } = require('twitter-api-v2');
 
-// Yeh function scheduled post ko Twitter par bhejega
 const processScheduledPost = async (post) => {
     console.log(`Processing post ID: ${post._id} for user ID: ${post.userId}`);
     try {
@@ -13,7 +12,6 @@ const processScheduledPost = async (post) => {
             throw new Error('Twitter account not found for user.');
         }
 
-        // Token refresh logic bilkul waisi hi hai jaisi postController me thi
         let userClient = new TwitterApi(twitterAccount.accessToken);
         try {
             console.log(`Attempting to post tweet for post ID: ${post._id}`);
@@ -21,7 +19,7 @@ const processScheduledPost = async (post) => {
             console.log(`Tweet posted successfully for post ID: ${post._id}`);
         } catch (e) {
             console.error(`Error posting tweet for post ID: ${post._id}:`, e);
-            if (e.code === 401) { // Token expired
+            if (e.code === 401) {
                 console.log(`Token expired for post ${post._id}. Refreshing...`);
                 const refreshingClient = new TwitterApi({
                     clientId: process.env.TWITTER_CLIENT_ID,
@@ -47,7 +45,7 @@ const processScheduledPost = async (post) => {
             }
         }
         
-        // Post successful hua, to status update karo
+
         post.status = 'posted';
         post.postedAt = new Date();
         await post.save();
@@ -55,22 +53,17 @@ const processScheduledPost = async (post) => {
 
     } catch (error) {
         console.error(`Failed to process post ID: ${post._id}. Error:`, error.message);
-        // Post fail hua, to status update karo
         post.status = 'failed';
         await post.save();
     }
 };
 
-// Yeh hamara main robot hai
 const startScheduler = () => {
-    // '* * * * *' ka matlab hai "har minute"
     console.log('Scheduler started. Checking for due posts every minute.');
     cron.schedule('* * * * *', async () => {
         console.log('Running cron job to check for scheduled posts...');
         
         const now = new Date();
-        // Database me un saare posts ko dhoondho jinka status 'scheduled' hai
-        // aur jinka post karne ka time abhi ya pehle ka hai
         const duePosts = await Post.find({
             status: 'scheduled',
             scheduledAt: { $lte: now }
@@ -78,7 +71,6 @@ const startScheduler = () => {
 
         if (duePosts.length > 0) {
             console.log(`Found ${duePosts.length} posts to process.`);
-            // Har post ko ek-ek karke process karo
             for (const post of duePosts) {
                 await processScheduledPost(post);
             }
