@@ -6,6 +6,7 @@ Built with the **MERN stack**, PostPilot AI empowers users to:
 - Generate creative **text and image content with AI**  
 - **Schedule posts** for the future  
 - Visualize their strategy on an **interactive calendar**  
+**Context-Aware Generation**: Saves your key business context, eliminating the need to repeat instructions and ensuring long-term content consistency
 
 ---
 
