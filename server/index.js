@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
     res.send('Hello from Humanity Hackathon Backend!');
 });
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 6001;
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

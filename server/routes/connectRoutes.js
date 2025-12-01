@@ -10,7 +10,7 @@ const {
 const {
     generateAuthLink: generateLinkedInLink,
     handleCallback: handleLinkedInCallback
-} = require('../controllers/LinkedinController.js');
+} = require('../controllers/linkedinController.js');
 
 router.get('/twitter', protect, generateTwitterLink);
 router.get('/twitter/callback', handleTwitterCallback);

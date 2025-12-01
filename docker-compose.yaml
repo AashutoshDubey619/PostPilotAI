@@ -1,0 +1,22 @@
+services:
+  # 1. Backend (Server) Service
+  server:
+    build: ./server
+    ports:
+      - "6001:6001"
+    env_file:
+      - ./server/.env.docker
+    networks:
+      - pospilot-net
+
+  # 2. Frontend (Client) Service
+  client:
+    build: ./client
+    ports:
+      - "4000:80"
+    networks:
+      - pospilot-net
+
+networks:
+  pospilot-net:
+    driver: bridge
