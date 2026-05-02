@@ -5,6 +5,7 @@ An AI-powered social media management tool designed to automate and optimize pos
 ## Live Demo
 
 Check out the live application here: [https://post-pilot-ai-one.vercel.app/](https://post-pilot-ai-one.vercel.app/)
+(!!! It Does not work currrently because of developer API permission changes from Twittter but the core architecture is still intact)
 
 ## Features
 
